@@ -13,4 +13,6 @@ The script `plot.py` allow to create a series of 1D and 2D plots for both decks.
 
 `$ module load conda-env/mypackages`
 
-The analysis routine can be then launched by the command `python plot.py`. In order to crate an animation, it is possible to use the `ffmpeg` module, once the plots have been produced by `plot.py`. An example for the current density $J_z$
+The analysis routine can be then launched by the command `python plot.py`. In order to create an animation, it is possible to use the `ffmpeg` module, once the plots have been produced by `plot.py`. This module can be simply loaded with `module load ffmpeg`. An example of the command to produce an animation with `ffmpeg` is:
+
+`ffmpeg -framerate 10 -i plot_name_%03d.jpg your_file.mp4`
