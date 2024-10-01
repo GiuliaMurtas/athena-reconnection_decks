@@ -1,0 +1,24 @@
+#!/bin/bash
+# FILENAME:reconnection
+
+#SBATCH -p wholenode
+#SBATCH --nodes=1
+#SBATCH --ntasks=128
+#SBATCH --time=06:00:00
+#SBATCH -o athena%j.out
+#SBATCH -e athena%j.err
+#SBATCH -A ast180008
+##SBATCH --mail-type=FAIL,BEGIN,END
+##SBATCH --mail-user=gmurtas@hawaii.edu
+
+##### These are shell commands
+date
+module load openmpi hdf5 parallel python
+module list
+
+srun --nodes 1 --ntasks 128 ./athena -i athinput.reconnection_openbc
+
+date
+echo 'Done'
+
+
