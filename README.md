@@ -5,11 +5,22 @@ Here you can find two problem generators:
 - `reconnection.cpp`
 - `reconnection_shear.cpp`
 
-The first deck (`reconnection.cpp`) runs a simple 2D double-periodic system with two current sheets, introduced by [Xiaocan Li](https://github.com/xiaocanli). For more information, check https://github.com/xiaocanli/athena_reconnection. The second deck (`reconnection_shear.cpp`) includes a shear velocity profile whose direction is parallel with the $B_{y}$ component of the magnetic field. Once Athena++ is installed, the problem generators must be put in `athena\src\pgen`.
+The first deck (`reconnection.cpp`) runs a simple 2D double-periodic system with two current sheets, introduced by [Xiaocan Li](https://github.com/xiaocanli). For more information on how to install and run Athena++, check https://github.com/xiaocanli/athena_reconnection. The second deck (`reconnection_shear.cpp`) includes a shear velocity profile whose direction is parallel with the $B_{y}$ component of the magnetic field. Once Athena++ is installed, the problem generators must be put in `athena\src\pgen`.
 
-## Compile and run a simulation
+## Compile and run a simulation on Purdue ANVIL
 
-In order to run a simulation [...]
+In order to run a simulation on ANVIL, the following files need to be copied into the simulation directory:
+
+- `compile_reconnection.sh`
+- `athinput.reconnection_openbc`
+- `athinput.reconnection_hall`
+- `anvil.batch`
+
+Before compiling, a few modules are needed to run these script on Purdue ANVIL:
+
+`> module load parallel openmpi hdf5 python`
+
+The script `compile_reconnection.sh` is used for configuring and compiling the code. To compile the code, run `> chmod u+x compile_reconnection.sh` to make it executable, then use `> ./compile_reconnection.sh`.
 
 ## Plot the results
 
