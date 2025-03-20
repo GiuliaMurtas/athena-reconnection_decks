@@ -23,11 +23,11 @@ import h5py
 import matplotlib.patches as patches
 from scipy.constants import physical_constants
 from scipy.interpolate import interp1d
-from scipy.ndimage.filters import median_filter, gaussian_filter
+#from scipy.ndimage.filters import median_filter, gaussian_filter
 from scipy.optimize import curve_fit
 from matplotlib import gridspec
 
-plt.rcParams['figure.dpi'] = 100
+plt.rcParams['figure.dpi'] = 300
 
 def mkdir_p(path):
     """Create directory recursively
@@ -77,7 +77,7 @@ def plot_jz(mhd_config, tframe, show_plot=False):
     #run_name1 = mhd_config1["run_name"]
     #run_dir1 = mhd_config1["run_dir"]
 
-    output_type = "reconnection_shear.prim"
+    output_type = "reconnection.prim"
     fname = run_dir + output_type + "." + str(tframe).zfill(5) + ".athdf"
     fdata = athena_read.athdf(fname)
 
@@ -223,7 +223,7 @@ def plot_jz(mhd_config, tframe, show_plot=False):
     ymax = mhd_config["mesh"]["x2max"]
     sizes = [xmin, xmax, ymin, ymax] #[xmin+1.5, xmax-1.5, ymin, ymax] for 4x2 domain
 
-    fig = plt.figure(figsize=[7.5, 5.0])
+    fig = plt.figure(figsize=[9.5, 8.5])
     gs = gridspec.GridSpec(1,
                            3,
                            wspace=0,
@@ -232,13 +232,18 @@ def plot_jz(mhd_config, tframe, show_plot=False):
                            bottom=0.15,
                            left=0.2,
                            right=0.8)
-    rect = [0.11, 0.12, 0.7, 0.8]
+    rect = [0.11, 0.12, 0.65, 0.8]
 
     dt_out = mhd_config["output1"]["dt"]
-    tva = dt_out * tframe / (ymax - ymin)
-    print(r'vz:',np.max(vz),np.min(vz))
-    print(r'vx:',np.max(vx),np.min(vx))
-    print(r'vy:',np.max(vy),np.min(vy))
+    tva = dt_out * tframe
+    #tva = dt_out * tframe / (ymax - ymin)
+    
+    #print(r'vz:',np.max(vz),np.min(vz))
+    #print(r'vx:',np.max(vx),np.min(vx))
+    #print(r'vy:',np.max(vy),np.min(vy))
+    
+    print(r'Density:',np.max(rho),np.min(rho))
+    print(r'x-velocity:',np.max(vx),np.min(vx))
 
     #print(r'Maximum pressure:',np.max(press))
     #print(r'Maximum density:',np.max(rho))
@@ -248,16 +253,17 @@ def plot_jz(mhd_config, tframe, show_plot=False):
 
     ax = fig.add_axes(rect)
     img = ax.imshow(jz,cmap=plt.cm.seismic, extent=sizes,  #jz[0:4096,3072:5120] for 4x2 domain #cividis for density, seismic for J
-                    vmin=-100, vmax=100, #0.5 to 1.5 for density, -100 to 100 for J
+                    vmin=-100, vmax=100, #0.5 to 1.5 for density, -100 to 100 for current density
                     aspect='equal', origin='lower')
     ax.set_title('t = '+str(round(tva,2))+r' $\tau_{A}$',fontsize=20)
     ax.set_xlabel('x',fontsize=20)
     ax.set_ylabel('y',fontsize=20)
     ax.set_yticks([0.5, 1.0, 1.5, 2.0])
+    ax.set_xticks([-0.5, 0.0, 0.5])
+    ax.set_xticklabels(['-0.5', '0.0', '0.5'])
     ax.tick_params(labelsize=15, direction='in')
-
-    #strm = ax.streamplot(x[3072:5120],y[0:4096],bx[0:4096,3072:5120],by[0:4096,3072:5120],linewidth=1,color='k',arrowstyle='-',density=0.6)
-
+    strm = ax.streamplot(x[1:],y[1:],bx,by,linewidth=0.5,color='k',density=1.0,arrowstyle='-')
+    
     rect[0] += rect[2] + 0.02
     rect[2] = 0.03
     cbar_ax = fig.add_axes(rect)
@@ -268,9 +274,9 @@ def plot_jz(mhd_config, tframe, show_plot=False):
     if not show_plot:
         plt.close()
 
-mhd_run_name = "reconnection_shear_0.8_high"
-mhd_run_dir = "/anvil/scratch/x-gmurtas/athena_reconnection/reconnection_shear_0.8_high/"
-mhd_config = get_mhd_config(mhd_run_dir, "athinput.reconnection_openbc")
+mhd_run_name = "test_4096_2048"
+mhd_run_dir = "/anvil/scratch/x-gmurtas/athena_reconnection/test_4096_2048/"
+mhd_config = get_mhd_config(mhd_run_dir, "athinput.reconnection")
 mhd_config["run_name"] = mhd_run_name
 mhd_config["run_dir"] = mhd_run_dir
 
@@ -280,21 +286,21 @@ mhd_config["run_dir"] = mhd_run_dir
 #mhd_config1["run_name"] = mhd_run_name1
 #mhd_config1["run_dir"] = mhd_run_dir1
 
-for x in range (0,10):
+#for x in range (0,10):
     #print,x
     #plot_jz(mhd_config, mhd_config1, x, show_plot=True)
-    plot_jz(mhd_config, x, show_plot=True)
-    plt.savefig("Jz_00"+str(x)+".jpg")
-    plt.close()
+#    plot_jz(mhd_config, x, show_plot=True)
+#    plt.savefig("Jz_00"+str(x)+".jpg", dpi=300)
+#    plt.close()
 
-for x in range (10,21):
-#    print,x
-    plot_jz(mhd_config, x, show_plot=True)
-    plt.savefig("Jz_0"+str(x)+".jpg")
-    plt.close()
-
-#for x in range (100,101):
+#for x in range (10,100):
 #    print,x
 #    plot_jz(mhd_config, x, show_plot=True)
-#    plt.savefig("Jz_"+str(x)+".jpg")
+#    plt.savefig("Jz_0"+str(x)+".jpg", dpi=300)
 #    plt.close()
+
+for x in range (100,201):
+#    print,x
+    plot_jz(mhd_config, x, show_plot=True)
+    plt.savefig("Jz_"+str(x)+".jpg", dpi=300)
+    plt.close()
